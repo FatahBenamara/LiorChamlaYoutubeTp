@@ -6,6 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Article;
 use App\Repository\ArticleRepository;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Form\ArticleType;
+
+
+
 
 class BlogController extends AbstractController
 {
@@ -31,6 +37,54 @@ class BlogController extends AbstractController
     {
         return $this->render('blog/home.html.twig');
     }
+
+
+    /**
+     * @Route("/blog/new", name="blog_create")
+     * @Route("/blog/{id}/edit", name="blog_edit")
+     */
+    public function form(Article $article= null, Request $request, EntityManagerInterface $manager)
+    {
+
+        //$article=new Article();
+        if(!$article){
+            $article = new Article();
+        }
+        // $form = $this->createFormBuilder($article)
+        // ->add('title')
+        // ->add('content')
+        // ->add('image')
+
+        // ->getform()
+        // ;
+
+        $form = $this->createForm(ArticleType::class, $article);
+
+        $form->handleRequest($request);
+        //dump($article);
+
+        if($form->isSubmitted() && $form->isValid()){ 
+            if(!$article->getId() ){
+               $article->setCreatedAt(new \DateTime()); 
+            }  
+            
+            $manager->persist($article);
+            $manager->flush();
+            return $this->redirectToRoute ('blog_show', ['id'=>$article->getId()]);
+        }
+
+        return $this->render('blog/create.html.twig', 
+                                [
+                                'formArticle'=>$form->createView(),
+                                'editMode' => $article->getId() !== null
+                                ]);
+    }
+
+
+
+
+
+
 
     /**
      * @Route("/blog/{id}", name="blog_show")
