@@ -1,23 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello BlogController!{% endblock %}
+{% block title %}Hello BlogController!
+{% endblock %}
 
-{% block body %} 
+{% block body %}
 
-<section class="articles">
-    <article>
-        <h2>   {{article.title}} </h2>
-        <div class="metadata">Ecrit le {{article.createdAt | date('d/m/y')}} à {{article.createdAt | date('H:I')}} dans la catégorie Politique</div>
-        <div class="content">
-            <img src=" {{article.image}} " alt="">
-            <p>    {{article.content}} </p>
-        </div>
-    </article>
+	<section class="articles">
+		<article>
+			<h2>
+				{{article.title}}
+			</h2>
+			<div class="metadata">Ecrit le
+				{{article.createdAt | date('d/m/y')}}
+				à
+				{{article.createdAt | date('H:I')}}
+				dans la catégorie
+				{{article.category.title}}
+			</div>
+			<div class="content">
+				<img src=" {{article.image}} " alt="">
+				<p>
+					{{article.content}}
+				</p>
+			</div>
+		</article>
+
+		<section id="commentaires">
+			{%      for comment in article.comments %}
+				<div class="comment">
+					<div class="row">
+						<div class="col-3">
+							(<small>{{comment.createdAt | date('d/m/y à H:I')}}</small>)
+						</div>
+
+						<div class="col">
+							{{comment.content | raw}}
+						</div>
+					</div>
+				</div>
+			{%   endfor %}
+		</section>
 
 
-
-
-</section>
+	</section>
 
 
 {% endblock %}
